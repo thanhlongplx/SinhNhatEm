@@ -201,6 +201,132 @@
         margin-bottom: 0;
       }
 
+      /* Fireworks */
+      .firework {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        pointer-events: none;
+        animation: explode 1.5s ease-out forwards;
+        z-index: 1000;
+        box-shadow: 0 0 10px currentColor;
+      }
+
+      @keyframes explode {
+        0% {
+          transform: scale(0.5) translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        20% {
+          transform: scale(1.5) translateY(-20px) rotate(90deg);
+          opacity: 1;
+        }
+        50% {
+          transform: scale(2) translateY(-60px) rotate(180deg);
+          opacity: 0.8;
+        }
+        80% {
+          transform: scale(1.8) translateY(-100px) rotate(270deg);
+          opacity: 0.6;
+        }
+        100% {
+          transform: scale(0.2) translateY(-150px) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Falling icons */
+      .falling-icon {
+        position: fixed;
+        font-size: 36px;
+        pointer-events: none;
+        animation: fall 5s linear forwards;
+        z-index: 2000;
+      }
+
+      @keyframes fall {
+        0% {
+          transform: translateY(0) rotate(0deg);
+          opacity: 1;
+        }
+        90% {
+          opacity: 1;
+        }
+        100% {
+          transform: translateY(110vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Floating hearts */
+      .floating-heart {
+        position: fixed;
+        font-size: 48px;
+        pointer-events: none;
+        animation: float 5s ease-in-out forwards;
+        z-index: 2000;
+        opacity: 0.25;
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(0) translateX(0) rotate(-20deg);
+          opacity: 0.25;
+        }
+        25% {
+          transform: translateY(-40px) translateX(30px) rotate(10deg);
+        }
+        50% {
+          transform: translateY(-80px) translateX(-20px) rotate(-10deg);
+          opacity: 0.25;
+        }
+        75% {
+          transform: translateY(-40px) translateX(40px) rotate(5deg);
+        }
+        100% {
+          transform: translateY(0) translateX(0) rotate(0deg);
+          opacity: 0.25;
+        }
+      }
+
+      @keyframes explodeHeart {
+        0% {
+          transform: scale(1) rotate(0deg);
+          opacity: 0.25;
+        }
+        50% {
+          transform: scale(1.3) rotate(180deg);
+          opacity: 0.4;
+        }
+        100% {
+          transform: scale(0) rotate(360deg);
+          opacity: 0;
+        }
+      }
+
+      /* Center burst fireworks */
+      .burst-firework {
+        position: fixed;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 2000;
+        box-shadow: 0 0 10px currentColor;
+      }
+
+      @keyframes burstOut {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--tx), var(--ty)) scale(0);
+          opacity: 0;
+        }
+      }
+
       .love-btn {
         transition:
           transform 0.35s ease,
@@ -355,6 +481,15 @@
       .custom-close:hover {
         transform: scale(1.2) rotate(90deg);
       }
+      #fireworks {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 9999; /* quan trọng */
+      }
+      .firework {
+        z-index: 1000;
+      }
     </style>
   </head>
   <body>
@@ -375,6 +510,7 @@
         <div class="d-flex gap-3 flex-wrap justify-content-center">
           <button
             onclick="
+              createFireworks();
               playBirthdaySong();
               showPopup();
             "
@@ -383,11 +519,16 @@
             🎁 Lời chúc cho em
           </button>
           <button
-            onclick="toggleMusic()"
             id="musicBtn"
-            class="love-btn btn btn-dark btn-outline-light btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5"
+            class="btn btn-dark btn-outline-light btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5"
           >
-            🎵 Em nhấn để bật tắt nhạc nhé
+            Nhấn 👆(phía trên) để xem thiệp của anh
+          </button>
+          <button
+            id="musicBtn"
+            class="btn btn-dark btn-outline-light btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5"
+          >
+            Công chúa lướt xem từ từ thôi nhé
           </button>
         </div>
       </div>
@@ -400,12 +541,12 @@
     </audio>
 
     <!-- Gallery -->
-    <section class="py-5" style="background: #fff0f5">
+    <section id="gallery-section" class="py-5" style="background: #fff0f5">
       <div class="container-fluid">
         <h2 class="section-title text-center mb-5">
           Những khoảnh khắc của em 🌸
         </h2>
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center px-4">
           <div class="col-md-4 col-6">
             <img
               src="./music/anh1.jpg"
@@ -446,20 +587,19 @@
     </section>
 
     <!-- Lời chúc chính -->
-    <section class="py-5">
+    <section id="wishes-section" class="py-5">
       <div class="container-fluid">
         <div class="row justify-content-center">
           <div class="col-lg-8 col-md-10 col-12">
             <div class="message-card p-5 text-center">
               <h2 class="text-pink fw-bold mb-4">Đôi lời muốn nhắn đến em❤️</h2>
               <p class="fs-5 lh-base modal-title">
-                Anh không hoàn hảo, anh cũng chẳng nhiều tiền Anh chỉ mong được
+                Anh không hoàn hảo, anh cũng chẳng nhiều tiền. Anh chỉ mong được
                 ở bên em, được chăm sóc em, được làm cho em hạnh phúc Cảm ơn em
                 vì đã là món quà tuyệt vời nhất của anh. Dù có những lúc anh
                 vụng về, có những lúc anh làm em buồn Nhưng anh luôn mong muốn
-                được làm cho em cười, được làm cho em vui Hãy luôn tin rằng anh
-                yêu em nhiều lắm, và anh sẽ luôn cố gắng để xứng đáng với tình
-                yêu của em
+                được làm cho em cười, được làm cho em vui. Và anh sẽ luôn cố
+                gắng để xứng đáng với tình yêu của em
               </p>
               <p class="fs-4 mt-4 text-pink modal-title">Sa rang heee</p>
               <div class="mt-4">🌸💕🌸💕🌸</div>
@@ -470,7 +610,7 @@
     </section>
 
     <!-- Lời chúc nhỏ -->
-    <section class="py-5 talk-section">
+    <section id="talk-section" class="py-5 talk-section">
       <div class="container-fluid">
         <h2 class="section-title text-center mb-5">
           Những điều anh muốn nói thêm
@@ -577,11 +717,39 @@
       }
 
       function showPopup() {
-        playBirthdaySong();
         const modal = new bootstrap.Modal(
           document.getElementById("birthdayModal"),
         );
         modal.show();
+      }
+
+      function createFireworks() {
+        const container = document.getElementById("fireworks");
+        const colors = [
+          "#ff1493",
+          "#ff69b4",
+          "#ffb6c1",
+          "#ffc0cb",
+          "#ffe4e1",
+          "#fff0f5",
+          "#ff4500",
+          "#ff6347",
+        ];
+        const numFireworks = 35;
+
+        for (let i = 0; i < numFireworks; i++) {
+          setTimeout(() => {
+            const firework = document.createElement("div");
+            firework.classList.add("firework");
+            firework.style.left = Math.random() * 100 + "vw";
+            firework.style.top = Math.random() * 60 + 40 + "vh"; // Từ 40-100% màn hình
+            firework.style.backgroundColor =
+              colors[Math.floor(Math.random() * colors.length)];
+            firework.style.animationDuration = Math.random() * 0.5 + 1.2 + "s"; // Random duration
+            container.appendChild(firework);
+            setTimeout(() => firework.remove(), 2000);
+          }, i * 30); // Faster stagger
+        }
       }
 
       function createFlyingSparkles() {
@@ -598,11 +766,156 @@
         }
       }
 
+      function createFallingIcons() {
+        const container = document.getElementById("paper-flowers");
+        const icons = ["🌸", "💕", "🎀", "✨", "💖", "🌹", "💐", "🦋"];
+        const numIcons = 25;
+
+        for (let i = 0; i < numIcons; i++) {
+          setTimeout(() => {
+            const icon = document.createElement("div");
+            icon.classList.add("falling-icon");
+            icon.textContent = icons[Math.floor(Math.random() * icons.length)];
+            icon.style.left = Math.random() * 100 + "vw";
+            icon.style.top = "-50px";
+            icon.style.animationDuration = Math.random() * 2 + 4 + "s";
+            icon.style.animationDelay = Math.random() * 0.8 + "s";
+            container.appendChild(icon);
+            setTimeout(() => icon.remove(), 6000);
+          }, i * 80);
+        }
+      }
+      function createFloatingHearts() {
+        const container = document.getElementById("paper-flowers");
+        const numHearts = 12;
+        const positions = [];
+
+        // Tạo vị trí so le nhau
+        for (let i = 0; i < numHearts; i++) {
+          positions.push({
+            left: i * (100 / numHearts) + (Math.random() * 20 - 10),
+            top: Math.random() * 60 + 20,
+            delay: Math.random() * 0.3,
+          });
+        }
+
+        positions.forEach((pos) => {
+          setTimeout(() => {
+            const heart = document.createElement("div");
+            heart.classList.add("floating-heart");
+            heart.textContent = "💖";
+            heart.style.left = pos.left + "vw";
+            heart.style.top = pos.top + "vh";
+            heart.style.animationDelay = pos.delay + "s";
+            container.appendChild(heart);
+
+            // Nổ tung sau 5 giây
+            setTimeout(
+              () => {
+                heart.style.animation = "explodeHeart 0.8s ease-out forwards";
+                setTimeout(() => heart.remove(), 1000);
+              },
+              5000 + pos.delay * 1000,
+            );
+          }, pos.delay * 100);
+        });
+      }
+
+      function createCenterBurst() {
+        const container = document.getElementById("fireworks");
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+        const colors = [
+          "#ff1493",
+          "#ff69b4",
+          "#ffb6c1",
+          "#ffc0cb",
+          "#ffe4e1",
+          "#fff0f5",
+          "#ff4500",
+          "#ff6347",
+        ];
+        const numBursts = 40;
+        const radius = 300; // Bán kính tỏa ra
+
+        for (let i = 0; i < numBursts; i++) {
+          const angle = (i / numBursts) * Math.PI * 2;
+          const tx = Math.cos(angle) * radius;
+          const ty = Math.sin(angle) * radius;
+
+          const firework = document.createElement("div");
+          firework.classList.add("burst-firework");
+          firework.style.left = centerX + "px";
+          firework.style.top = centerY + "px";
+          firework.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          firework.style.setProperty("--tx", tx + "px");
+          firework.style.setProperty("--ty", ty + "px");
+          firework.style.animation =
+            "burstOut " + (Math.random() * 0.5 + 1) + "s ease-out forwards";
+          firework.style.animationDelay = Math.random() * 0.2 + "s";
+          container.appendChild(firework);
+          setTimeout(() => firework.remove(), 2000);
+        }
+      }
+
+      // Intersection Observer for gallery section
+      const galleryObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              createFallingIcons();
+              galleryObserver.unobserve(entry.target); // Only trigger once
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+
+      // Intersection Observer for wishes section
+      const wishesObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              createFloatingHearts();
+              wishesObserver.unobserve(entry.target); // Only trigger once
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+
+      // Intersection Observer for talk section
+      const talkObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              createCenterBurst();
+              talkObserver.unobserve(entry.target); // Only trigger once
+            }
+          });
+        },
+        { threshold: 0.3 },
+      );
+
       // Khởi tạo
       window.addEventListener("DOMContentLoaded", () => {
-        setTimeout(playBirthdaySong, 800);
         createFlyingSparkles();
+        const gallerySection = document.getElementById("gallery-section");
+        if (gallerySection) {
+          galleryObserver.observe(gallerySection);
+        }
+        const wishesSection = document.getElementById("wishes-section");
+        if (wishesSection) {
+          wishesObserver.observe(wishesSection);
+        }
+        const talkSection = document.getElementById("talk-section");
+        if (talkSection) {
+          talkObserver.observe(talkSection);
+        }
       });
     </script>
+    <div id="fireworks"></div>
+    <div id="paper-flowers"></div>
   </body>
 </html>
