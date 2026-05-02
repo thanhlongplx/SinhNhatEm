@@ -154,6 +154,48 @@
         box-shadow: 0 15px 30px rgba(255, 20, 147, 0.4);
       }
 
+      /* Flying sparkles */
+      #flying-sparkles {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .flying-sparkle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: radial-gradient(
+          circle,
+          #fff 0%,
+          #ff69b4 50%,
+          transparent 100%
+        );
+        border-radius: 50%;
+        pointer-events: none;
+        animation: flyUp 8s linear infinite;
+        z-index: 5;
+      }
+
+      @keyframes flyUp {
+        0% {
+          transform: translateY(100vh) scale(0);
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+          transform: translateY(90vh) scale(1);
+        }
+        90% {
+          opacity: 1;
+          transform: translateY(10vh) scale(1);
+        }
+        100% {
+          transform: translateY(-10vh) scale(0);
+          opacity: 0;
+        }
+      }
+
       .gallery-img {
         transition: all 0.4s;
         border-radius: 20px;
@@ -271,6 +313,7 @@
         </div>
       </div>
     </section>
+    <div id="flying-sparkles"></div>
 
     <!-- Audio Local -->
     <audio id="birthdayAudio" loop preload="auto">
@@ -452,9 +495,24 @@
         modal.show();
       }
 
+      function createFlyingSparkles() {
+        const container = document.getElementById("flying-sparkles");
+        const numSparkles = 12; // Giới hạn số lượng để tối ưu
+
+        for (let i = 0; i < numSparkles; i++) {
+          const sparkle = document.createElement("div");
+          sparkle.classList.add("flying-sparkle");
+          sparkle.style.left = Math.random() * 100 + "vw";
+          sparkle.style.animationDelay = Math.random() * 8 + "s";
+          sparkle.style.animationDuration = Math.random() * 4 + 6 + "s";
+          container.appendChild(sparkle);
+        }
+      }
+
       // Khởi tạo
       window.addEventListener("DOMContentLoaded", () => {
         setTimeout(playBirthdaySong, 800);
+        createFlyingSparkles();
       });
     </script>
   </body>
