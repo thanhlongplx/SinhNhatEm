@@ -26,16 +26,80 @@
         overflow-x: hidden;
         min-height: 100vh;
       }
-
       .hero {
         min-height: 100vh;
-        background:
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      /* ánh sáng chạy ngang */
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -75%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(
+          120deg,
+          transparent,
+          rgba(255, 255, 255, 0.6),
+          transparent
+        );
+        transform: skewX(-25deg);
+        animation: shine 4s infinite;
+      }
+
+      /* sparkle nhẹ */
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image: radial-gradient(white 1px, transparent 1px);
+        background-size: 50px 50px;
+        opacity: 0.3;
+        animation: sparkle 6s linear infinite;
+      }
+
+      /* animation ánh sáng */
+      @keyframes shine {
+        0% {
+          left: -75%;
+        }
+        100% {
+          left: 125%;
+        }
+      }
+
+      /* animation lấp lánh */
+      @keyframes sparkle {
+        0% {
+          opacity: 0.2;
+          transform: translateY(0);
+        }
+        50% {
+          opacity: 0.5;
+        }
+        100% {
+          opacity: 0.2;
+          transform: translateY(-10px);
+        }
+      }
+      .love-btn {
+        position: relative;
+        z-index: 10;
+      }
+      .hero {
+        min-height: 100vh;
+        /* background:
           radial-gradient(
             circle at top,
             rgba(255, 182, 193, 0.8),
             transparent 40%
           ),
-          linear-gradient(135deg, #ffe4e1 0%, #fff0f5 100%);
+          linear-gradient(135deg, #ffe4e1 0%, #fff0f5 100%); */
         display: flex;
         align-items: center;
         position: relative;
@@ -174,17 +238,17 @@
   </head>
   <body>
     <!-- Hero -->
-    <section class="hero text-center position-relative">
+    <section class="bg-dark hero text-center position-relative">
       <div
-        class="container-fluid h-100 d-flex flex-column justify-content-center align-items-center"
+        class="bg-dark container-fluid h-100 d-flex flex-column justify-content-center align-items-center"
       >
         <h1 class="display-1 fw-bold text-white mb-3">Happy Birthday</h1>
         <h2 class="birthday-text fw-bold">Hoài Anh ❤️</h2>
 
         <div class="d-flex justify-content-center gap-4 my-5">
-          <span class="cake fs-1">🎂</span>
-          <span class="fs-1">🌷</span>
-          <span class="fs-1">💖</span>
+          <span class="cake fs-1">💖</span>
+          <span class="fs-1">🎂</span>
+          <span class="cake fs-1">💖</span>
         </div>
 
         <div class="d-flex gap-3 flex-wrap justify-content-center">
@@ -200,7 +264,7 @@
           <button
             onclick="toggleMusic()"
             id="musicBtn"
-            class="love-btn btn btn-outline-light btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5"
+            class="love-btn btn btn-dark btn-outline-light btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold fs-5"
           >
             🎵 Nhạc chúc mừng
           </button>
@@ -217,7 +281,7 @@
     <section class="py-5" style="background: #fff0f5">
       <div class="container-fluid">
         <h2 class="section-title text-center mb-5">
-          Những khoảnh khắc của chúng ta 🌸
+          Những khoảnh khắc của em 🌸
         </h2>
         <div class="row g-4">
           <div class="col-md-4 col-6">
@@ -373,16 +437,18 @@
       function toggleMusic() {
         if (audio.paused) {
           playBirthdaySong();
-          musicBtn.innerHTML = `<i class="fas fa-pause me-2"></i> Tạm dừng nhạc`;
+          musicBtn.innerHTML = `⏸️ Tạm dừng nhạc`;
         } else {
           audio.pause();
-          musicBtn.innerHTML = `<i class="fas fa-music me-2"></i> Nhạc chúc mừng`;
+          musicBtn.innerHTML = `🎵 Nhạc chúc mừng`;
         }
       }
 
       function showPopup() {
         playBirthdaySong();
-        const modal = new bootstrap.Modal(document.getElementById("birthdayModal"));
+        const modal = new bootstrap.Modal(
+          document.getElementById("birthdayModal"),
+        );
         modal.show();
       }
 
